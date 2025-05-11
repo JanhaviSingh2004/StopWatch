@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowTime Stopwatch</title>
+  
+  <!-- Google Fonts Import -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap'); /* Montserrat font with bold weight */
+  </style>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      font-family: 'Quicksand', sans-serif; /* Default font for body */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      flex-direction: column;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem; /* Space between header and stopwatch box */
+    }
+
+    /* Apply Montserrat font (bold) specifically to h1 */
+    .header h1 {
+      font-size: 3rem;
+      margin: 0;
+      font-family: 'Montserrat', sans-serif; /* Montserrat font for FlowTime */
+      font-weight: bold; /* Make the title bold */
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      font-style: italic;
+      margin: 0;
+      font-family: 'Playwrite AR', cursive; /* Font for the tagline */
+    }
+
+    .stopwatch-container {
+      background-color: rgba(255, 255, 255, 0.3); /* More transparent white */
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      width: 350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .time {
+      font-size: 4rem;
+      margin: 1.5rem 0;
+      font-family: 'Rubik Mono One', sans-serif;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      width: 100%;
+    }
+
+    .buttons button {
+      padding: 0.8rem 1.5rem;
+      margin: 0.5rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    /* New shades of blue for each button */
+    .start {
+      background-color: #5b9bd5; /* Light blue */
+      color: white;
+    }
+    .start:hover {
+      background-color: #4a8db8; /* Slightly darker blue */
+    }
+
+    .pause {
+      background-color: #7bb0e6; /* Sky blue */
+      color: white;
+    }
+    .pause:hover {
+      background-color: #629ab8; /* Slightly darker sky blue */
+    }
+
+    .reset {
+      background-color: #3b5998; /* Dark blue */
+      color: white;
+    }
+    .reset:hover {
+      background-color: #2e4684; /* Slightly darker dark blue */
+    }
+
+    .lap {
+      background-color: #4682b4; /* Medium blue */
+      color: white;
+    }
+    .lap:hover {
+      background-color: #356a91; /* Slightly darker medium blue */
+    }
+
+    .buttons button:hover {
+      opacity: 0.9;
+    }
+
+    .laps {
+      margin-top: 1.5rem;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    .lap-item {
+      font-size: 1rem;
+      padding: 0.4rem;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>FlowTime</h1>
+    <p>Time that moves with you.</p>
+  </div>
+
+  <div class="stopwatch-container">
+    <div class="time" id="display">00:00:00.000</div>
+    <div class="buttons">
+      <button class="start" onclick="start()">Start</button>
+      <button class="pause" onclick="pause()">Pause</button>
+      <button class="reset" onclick="reset()">Reset</button>
+      <button class="lap" onclick="lap()">Lap</button>
+    </div>
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <script>
+    let startTime, elapsedTime = 0, timerInterval, laps = 0;
+
+    function formatTime(ms) {
+      const milliseconds = ms % 1000;
+      const totalSeconds = Math.floor(ms / 1000);
+      const seconds = totalSeconds % 60;
+      const minutes = Math.floor(totalSeconds / 60) % 60;
+      const hours = Math.floor(totalSeconds / 3600);
+
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
+    }
+
+    function start() {
+      if (!timerInterval) {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(() => {
+          elapsedTime = Date.now() - startTime;
+          document.getElementById("display").textContent = formatTime(elapsedTime);
+        }, 10);
+      }
+    }
+
+    function pause() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function reset() {
+      pause();
+      elapsedTime = 0;
+      laps = 0;
+      document.getElementById("display").textContent = "00:00:00.000";
+      document.getElementById("laps").innerHTML = "";
+    }
+
+    function lap() {
+      if (elapsedTime === 0) return;
+      const lapTime = formatTime(elapsedTime);
+      const lapItem = document.createElement("div");
+      lapItem.className = "lap-item";
+      lapItem.textContent = `Lap ${++laps}: ${lapTime}`;
+      document.getElementById("laps").prepend(lapItem);
+    }
+  </script>
+</body>
+</html>
